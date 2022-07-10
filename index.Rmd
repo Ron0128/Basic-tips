@@ -1,30 +1,301 @@
 ---
 title: "Basic-tips"
 author: "Ron0128"
-date: '2022-07-09'
-output: html_document
+date: "`r format(Sys.time(), '%Y/%m/%d')`"
+output: 
+  html_document:
+      toc: TRUE
+      toc_float: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(
+	echo = TRUE,
+	fig.height = 8,
+	fig.width = 8,
+	message = FALSE,
+	warning = FALSE)
 ```
 
-## R Markdown
+# はじめに
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+* おぼえたことをがんばってめもするイッヌ
+* Windows環境を想定した内容です
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+# 設定
 
-```{r cars}
-summary(cars)
+## R
+
+### インストール
+
+1. [CRAN（The Comprehensive R Archive Network）](https://cran.ism.ac.jp/)をクリック（The Institute of Statistical Mathematics, Tokyo）
+
+2. Download R for Windowsをクリック
+![Figure1.Rのインストール方法1](images/r_install_1.PNG)
+
+3. baseをクリック
+
+![Figure2.Rのインストール方法2](images/r_install_2.PNG)
+
+4. Download R-X.X.X for Windowsをクリック
+
+![Figure3.Rのインストール方法3](images/r_install_3.PNG)
+
+5. ダウンロードしたファイル（R-X.X.X-win）をダブルクリックし，次へをクリックしていく（特別な事情がなければデフォルトの設定のままでよい）
+
+### バージョンアップ／ダウン
+
+1. 「インストール」と同様の手順でインストール
+
+2. ToolsをクリックしてGlobal Optionsをクリック
+
+![Figure4.Rのバージョンアップ／ダウン方法1](images/r_version_1.PNG)
+
+3. Changeをクリック
+
+![Figure5.Rのバージョンアップ／ダウン方法2](images/r_version_2.PNG)
+
+4. 最新のバージョンを選択してOKをクリックしてさらにOKをクリック
+
+バージョンダウンさせたければ，ここで古いバージョンを選択する
+
+![Figure6.Rのバージョンアップ／ダウン方法3](images/r_version_3.PNG)
+
+5. コンソールで`R.version`と打ち，バージョンを確認
+
+![Figure7.Rのバージョンアップ／ダウン方法4](images/r_version_4.PNG)
+
+6. 反映されていなければ，一度RStudioを起動し直す
+
+## RStudio
+
+### インストール
+
+* Rをインストールしてから
+
+1. [Download the RStudio IDE](https://www.rstudio.com/products/rstudio/download/)をクリック
+
+![Figure8.RStudioのインストール方法1](images/rstudio_install_1.PNG)
+
+2. スクロールしてAll Installersから"Windows X"の"RStudio-XXXX.XX.x-XXX.exe"をクリック
+
+![Figure9.RStudioのインストール方法2](images/rstudio_install_2.PNG)
+
+3. ダウンロードされたファイルをダブルクリックし，次へをクリックしていく（特別な事情がなければデフォルトの設定のままでよい）
+
+### ワークスペースの設定
+
+1. ToolsをクリックしてGlobal optionsをクリック
+
+![Figure10.RStudioの設定1](images/r_version_1.PNG)
+
+2. Workspaceの"Restore .RData into workspace at startup"にチェックが入っていたらチェックを外す
+
+![Figure11.RStudioの設定2](images/rstudio_setting_1.PNG)
+
+3. 同じWorkspaceの"Save workspace to .RData on exit"が"Never"になっていなければ"Never"にしてOKをクリック
+
+![Figure12.RStudioの設定3](images/rstudio_setting_2.PNG)
+
+### 文字コードの設定
+
+1. ToolsをクリックしてGlobal optionsをクリック
+
+![Figure13.RStudioの設定4](images/r_version_1.PNG)
+
+2. CodeをクリックしてSavingをクリックしてDefault text encodingで"UTF-8"を選択してOKをクリック
+
+![Figure14.RStudioの設定5](images/rstudio_setting_3.PNG)
+
+### プロジェクトの使い方
+
+* GitHubと連携する場合は，[GitHub-tips](ron0128.github.io/github-tips/)の"RStudioの設定"にプロジェクトの設定方法を記載しているので，そちらをご参照ください。
+
+1. ProjectをクリックしてNew Projectをクリック
+
+![Figure15.RStudioプロジェクトの設定1](images/rstudio_project_1.PNG)
+
+2. New Directoryをクリック
+
+![Figure16.RStudioプロジェクトの設定2](images/rstudio_project_2.PNG)
+
+3. New Projectをクリック
+
+![Figure17.RStudioプロジェクトの設定3](images/rstudio_project_3.PNG)
+
+4. Directory nameにプロジェクト名を入力
+
+![Figure18.RStudioプロジェクトの設定4](images/rstudio_project_4.PNG)
+
+5. Create project as subdirectory ofにプロジェクトを作りたい場所を指定してCreate Projectをクリック
+
+![Figure19.RStudioプロジェクトの設定5](images/rstudio_project_5.PNG)
+
+
+# パッケージの読み込み
+
+* 起動するたびにパッケージを読み込む必要がある
+
+* パッケージをインストールしていなければ`install.packages("tidyverse")`でインストール
+
+## パッケージを読み込み
+
+```{r}
+library(tidyverse)
+library(palmerpenguins) # サンプルデータ
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+# データの読み込み（Import）
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+## csvファイルを読み込む場合
+
+* data.tableパッケージのfread関数
+  + freadはRの文字コードに依存する
+  + いまはRの文字コードがUTF-8になったので，UTF-8で作られたcsvであれば読み込める
+  + cp932で作られたcsvは読み込めない 
+  + tibble型にはならない
+  + [data.table: Extension of 'data.frame'](https://cran.r-project.org/web/packages/data.table/index.html)
+
+* vroomパッケージのvroom関数（推奨）
+  + vroomは文字コードを指定することができる
+  + UTF-8がデフォルトのため，UTF-8で作られたcsvであれば引数なしに読み込める
+  + cp932で作られたcsvは引数`locale = locale(encoding = "cp932")`を指定すれば読み込める
+  + tibble型になる
+  + [vroom: Read and Write Rectangular Text Data Quickly](https://cran.r-project.org/web/packages/vroom/index.html)
+
+```{r eval=FALSE}
+# fread（UTF-8）
+# tibble型になっていないのでas_tibble()でtibble型にする
+df <- 
+  data.table::fread(".csv",
+                    data.table = FALSE) |> 
+  as_tibble()
+
+# vroom（UTF-8）
+df <- 
+  vroom::vroom(".csv")
+
+# vroom（cp932）
+df <- 
+  vroom::vroom(".csv",
+               locale = locale(encoding = "cp932"))
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Excelファイルを読み込む場合
+
+* readxlパッケージのread_xlsx関数
+  + 文字コードは問題にならない
+  + tibble型にはならない
+  + [readxl: Read Excel Files](https://cran.r-project.org/web/packages/readxl/index.html)
+
+```{r eval=FALSE}
+df <- 
+  readxl::read_xlsx(".xlsx") |> 
+  as_tibble()
+
+# シートを指定したいときはsheet引数を使う
+df <- 
+  read_xlsx(".xlsx", 
+            sheet = "") |> 
+  as_tibble()
+```
+
+
+# データ変換（Data transformation）
+
+* サンプルデータの内容（palmerpenguinsパッケージのpenguinsデータ）
+  + 8変数344観測値のデータ
+  + species: ペンギンの種類を表す因子型の変数（アデリー，ヒゲ，ジェンツー）
+  + island: 南極パーマー諸島の島を表す因子型の変数（ビスコー諸島，ドリーム島，トージャーセン島）
+  + bill_length_mm: くちばしの長さを表す実数型の変数（mm）
+  + bill_depth_mm: くちばしの厚さを表す実数型の変数（mm）
+  + flipper_length_mm: 翼の長さを表す整数型の変数（mm）
+  + body_mass_g: 体重を表す整数型の変数（グラム）
+  + sex: 性別を表す因子型の変数（オス，メス）
+  + year: 調査年を表す整数型の変数（2007年，2008年，2009年）
+  + [palmerpenguins: Palmer Archipelago (Antarctica) Penguin Data](https://cloud.r-project.org/web/packages/palmerpenguins/index.html)
+  
+```{r}
+penguins
+```
+
+## 行（select）
+
+### 変数をひとつ選択する
+
+```{r}
+penguins |> 
+  select(species)
+```
+
+### 変数を個別に複数選択する
+
+```{r}
+penguins |> 
+  select(species, island, year)
+```
+
+### 変数を連続で複数選択する
+
+```{r}
+penguins |> 
+  select(species:bill_length_mm)
+```
+
+### 変数をまとめて複数選択する
+
+```{r}
+obs <- 
+  c("species", "year")
+
+penguins |> 
+  select(all_of(obs))
+```
+
+```{r}
+penguins |> 
+  select(any_of(obs))
+```
+
+### all_ofとany_ofの違い
+
+```{r eval=FALSE}
+# ペンギンデータに含まれていない"weight"が入ったobsを作成
+obs <- 
+  c("species", "year", "weight")
+
+# all_ofを使うと"weight"がないためエラーになる
+penguins |> 
+  select(all_of(obs))
+
+# any_ofを使うと"weight"がなくともエラーにならない
+penguins |> 
+  select(any_of(obs))
+```
+
+### 変数を選択しない
+
+```{r}
+penguins |> 
+  select(!species)
+```
+
+### 変数を個別に複数選択しない
+
+```{r}
+penguins |> 
+  select(!c(species, island))
+```
+
+
+
+
+
+# ショートカット
+
+# 引用文献
+
+```{r}
+
+```
