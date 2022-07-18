@@ -220,12 +220,242 @@ df <-
 penguins
 ```
 
-## 行（filter）
+## 行
 
-* ケースを絞りたいとき
+* [R for Data Science（2e）](https://r4ds.hadley.nz/)を参照して作成
+
+### ケースを選択する（filter）
 
 * "## パッケージを読み込み"を実行してから
 
+#### 選択するシリーズ
+
+##### 条件をひとつ指定して選択する
+
+* `==`（等しい），`>=`（以上），`>`（超），`<=`（以下），`<`（未満）などが使える
+
+```{r}
+# "species"が"Adelie"のケースを選択する
+# countで"species"を確認
+penguins |> 
+  filter(species == "Adelie") |> 
+  count(species)
+
+# "bill_length_mm"が"35以上"のケースを選択する
+# countで"bill_length_mm"を確認
+penguins |> 
+  filter(bill_length_mm >= 35) |> 
+  count(bill_length_mm)
+
+# "bill_length_mm"が"35超"のケースを選択する
+# countで"bill_length_mm"を確認
+penguins |> 
+  filter(bill_length_mm > 35) |> 
+  count(bill_length_mm)
+
+# "bill_depth_mm"が"14以下"のケースを選択する
+# countで"bill_depth_mm"を確認
+penguins |> 
+  filter(bill_depth_mm <= 14) |> 
+  count(bill_depth_mm)
+
+# "bill_depth_mm"が"35超"のケースを選択する
+# countで"bill_depth_mm"を確認
+penguins |> 
+  filter(bill_depth_mm < 14) |> 
+  count(bill_depth_mm)
+```
+
+##### 条件を複数指定して選択する
+
+* `&`（および），`|`（または）などが使える
+
+* `|`のショートカットに`%in%`がある
+
+```{r}
+# "species"が"Adelie"で"island"が"Biscoe"のケースを選択する
+# countで"species"と"island"を確認
+penguins |> 
+  filter(species == "Adelie" & island == "Biscoe") |> 
+  count(species, island)
+
+# "species"が"Adelie"または"Chinstrap"のケースを選択する
+# countで"species"を確認
+
+# | 
+penguins |> 
+  filter(species == "Adelie" | species == "Chinstrap") |> 
+  count(species)
+
+# %in% 
+penguins |> 
+  filter(species %in% c("Adelie", "Chinstrap")) |> 
+  count(species)
+```
+
+#### 選択しないシリーズ 
+
+##### 条件をひとつ指定して選択しない
+
+* `==`（等しい），`>=`（以上），`>`（超），`<=`（以下），`<`（未満）などが使える
+
+* `!=`でfilterするとNAも削除されることに注意（詳細は後述）
+
+```{r}
+# "species"が"Adelie"のケースを選択しない
+# countで"species"を確認
+penguins |> 
+  filter(species != "Adelie") |> 
+  count(species)
+
+# "bill_length_mm"が"35以上"のケースを選択しない
+# countで"bill_length_mm"を確認
+penguins |> 
+  filter(!(bill_length_mm >= 35)) |> 
+  count(bill_length_mm)
+
+# "bill_length_mm"が"35超"のケースを選択しない
+# countで"bill_length_mm"を確認
+penguins |> 
+  filter(!(bill_length_mm > 35)) |> 
+  count(bill_length_mm)
+
+# "bill_depth_mm"が"14以下"のケースを選択しない
+# countで"bill_depth_mm"を確認
+penguins |> 
+  filter(!(bill_depth_mm <= 14)) |> 
+  count(bill_depth_mm)
+
+# "bill_depth_mm"が"35超"のケースを選択しない
+# countで"bill_depth_mm"を確認
+penguins |> 
+  filter(!(bill_depth_mm < 14)) |> 
+  count(bill_depth_mm)
+```
+
+##### 条件を複数指定して選択しない
+
+* `&`（および），`|`（または）などが使える
+
+* `|`のショートカットに`%in%`がある
+
+```{r}
+# "species"が"Adelie"で"island"が"Biscoe"のケースを選択しない
+# countで"species"と"island"を確認
+penguins |> 
+  filter(!(species == "Adelie" & island == "Biscoe")) |> 
+  count(species, island)
+
+# "species"が"Adelie"または"Chinstrap"のケースを選択しない
+# countで"species"を確認
+
+# | 
+penguins |> 
+  filter(!(species == "Adelie" | species == "Chinstrap")) |> 
+  count(species)
+
+# %in% 
+penguins |> 
+  filter(!(species %in% c("Adelie", "Chinstrap"))) |> 
+  count(species)
+```
+
+##### != を使うときの注意
+
+* `filter(sex != "male")"`でfilterするとNAも削除される
+
+* `filter(!sex %in% c("male"))"`でfilterすればNAは削除されない
+
+```{r}
+# "sex"には"female"，"male"，"NA"が入っている
+penguins |> 
+  count(sex)
+
+# "sex != male"として"male"を選択しないようにする
+# countで"sex"を確認
+# "NA"も除外されていて"female"のみが選択される
+penguins |> 
+  filter(sex != "male") |> 
+  count(sex)
+
+# "NA"を除外せず"male"だけを選択しないようにする
+# countで"sex"を確認
+# "female"と"NA"が選択される
+penguins |> 
+  filter(!sex %in% c("male")) |> 
+  count(sex)
+```
+
+
+#### 欠損値
+
+##### 欠損値のみを選択する
+
+```{r}
+# "sexがNAのケースを選択する
+# countで"sex"を確認
+penguins |>
+  filter(is.na(sex)) |> 
+  count(sex)
+```
+
+##### 欠損値を選択しない
+
+* `drop_na`と`filter(!is.na)`を使う方法がある
+
+* ひとつの変数を扱う場合であればどちらも同じだが，複数の変数を扱う場合は`drop_na`のほうが便利そう
+
+```{r}
+# drop_na ----------
+
+## "sexがNAのケースを選択しない
+## countで"sex"を確認
+penguins |> 
+  drop_na(sex) |> 
+  count(sex)
+
+## 複数の変数の欠損を除く
+## filter(is.na)で"sex"の欠損または"bill_length_mm"の欠損を確認
+penguins |> 
+  drop_na(sex, bill_length_mm) |> 
+  filter(is.na(sex) | is.na(bill_length_mm))
+
+# filter(!is.na) ----------
+
+## "sexがNAのケースを選択しない
+## countで"sex"を確認
+penguins |>
+  filter(!is.na(sex)) |> 
+  count(sex)
+
+## 複数の変数の欠損を除く
+## filter(is.na)で"sex"の欠損または"bill_length_mm"の欠損を確認
+penguins |>
+  filter(!is.na(sex), !is.na(bill_length_mm)) |> 
+  filter(is.na(sex) | is.na(bill_length_mm))
+```
+
+### ケースを並び替える（arrange）
+
+#### 昇順に並び替える
+
+```{r}
+# "bill_length_mm"を昇順に並び替える
+# selectで"bill_length_mm"を確認
+penguins |> 
+  arrange(bill_length_mm) |> 
+  select(bill_length_mm)
+```
+
+#### 降順に並び替える
+
+```{r}
+# "bill_length_mm"を降順に並び替える
+# selectで"bill_length_mm"を確認
+penguins |> 
+  arrange(desc(bill_length_mm)) |> 
+  select(bill_length_mm)
+```
 
 ## 列
 
@@ -363,7 +593,6 @@ df |>
   select(matches("x[1-3]"))
 ```
 
-
 #### 選択しないシリーズ
 
 ##### 変数を選択しない
@@ -474,11 +703,319 @@ df |>
   select(!matches("x[1-3]"))
 ```
 
-##### オブジェクトの削除
+### 変数を追加する（mutate）
+
+#### 変数をひとつ追加する
+
+* デフォルトではデータセットの右側に新しく変数が追加される
 
 ```{r}
-rm(df)
+# "body_mass_kg"を新たに追加する
+# "body_mass_kg"は"body_mass_g"を1000で割ったもの
+# "body_mass_kg"は一番右側に作られる
+# selectで"body_mass_g"と"body_mass_kg"を確認
+penguins |> 
+  mutate(body_mass_kg = body_mass_g / 1000) |> 
+  select(body_mass_g, body_mass_kg)
 ```
+
+##### 任意の変数の前に追加する
+
+* 任意の変数の前に入れたい場合は`.before`が使える
+
+```{r}
+# ".before = 1"とすると一番目の変数の前に加わる
+penguins |> 
+  mutate(body_mass_kg = body_mass_g / 1000,
+         .before = 1) 
+
+# ".before = body_mass_g"とすると"body_mass_g"の前に加わる
+penguins |> 
+  mutate(body_mass_kg = body_mass_g / 1000,
+         .before = body_mass_g) 
+```
+
+##### 任意の変数の後に追加する
+
+* 任意の変数の後に入れたい場合は`.after`が使える
+
+```{r}
+# ".after = 1"とすると一番目の変数の後に加わる
+penguins |> 
+  mutate(body_mass_kg = body_mass_g / 1000,
+         .after = 1) 
+
+# ".after = body_mass_g"とすると"body_mass_g"の後に加わる
+penguins |> 
+  mutate(body_mass_kg = body_mass_g / 1000,
+         .after = body_mass_g) 
+```
+
+##### 保持する変数を制限する
+
+* 保持する変数を制限する場合は`keep`が使える
+
+```{r}
+# ".keep = "used""とすると使った変数のみが表示される
+penguins |> 
+  mutate(body_mass_kg = body_mass_g / 1000,
+         .keep = "used") 
+```
+
+#### 変数を複数追加する
+
+```{r}
+# "bill_length_mm_cm"，"flipper_length_mm_cm"を新たに追加する
+# "bill_length_mm_cm"は"bill_length_mm"を10で割ったもの（flipper_lengthも同じ）
+# selectで"bill_length_mm"と"bill_length_mm_cm"，"flipper_length_mm"と"flipper_length_mm_cm"を確認
+
+# c()
+penguins |> 
+  mutate(across(c(bill_length_mm, flipper_length_mm),
+         list(cm = ~ (. / 10)))) |> 
+  select(bill_length_mm, bill_length_mm_cm, flipper_length_mm, flipper_length_mm_cm)
+
+# ends_with
+penguins |> 
+  mutate(across(ends_with("length_mm"),
+         list(cm = ~ (. / 10)))) |> 
+  select(bill_length_mm, bill_length_mm_cm, flipper_length_mm, flipper_length_mm_cm)
+```
+
+#### 2値変数をひとつ追加する
+
+```{r}
+# "body_mass_3000"を新たに追加する
+# "body_mass_3000"は"body_mass_g"が"3000以上"の場合は"1"，そうでない場合は"0"のもの
+# countで"body_mass_g"と"body_mass_3000"を確認
+penguins |> 
+  mutate(body_mass_3000 = if_else(body_mass_g >= 3000, 1, 0)) |> 
+  count(body_mass_g, body_mass_3000)
+```
+
+#### 3値以上の変数をひとつ追加する
+
+```{r}
+# "body_mass_3000"を新たに追加する
+# "body_mass_3000"は"body_mass_g"が"3000以上"の場合は"1"，そうでない場合は"0"のもの
+# countで"body_mass_g"と"body_mass_3000"を確認
+# "body_mass_g"がNAのものは"不明"とする
+penguins |> 
+  mutate(
+    body_mass_range = case_when(
+      body_mass_g <= 3000 ~ "～3000", 
+      body_mass_g <= 4000 ~ "～4000",
+      body_mass_g <= 5000 ~ "～5000",
+      body_mass_g <= 6000 ~ "～6000",
+      body_mass_g >= 6000 ~ "6000～",
+      is.na(body_mass_g)  ~ "不明")) |> 
+  count(body_mass_g, body_mass_range)
+```
+
+#### 変数の型を変更する
+
+* 変数の型
+
+関数|用途
+----|----|----
+as.character|文字列型に変更する
+as.factor|因子型に変更する
+as.numeric|数値型に変更する
+
+```{r}
+# "year"を文字列型に変更する
+# countで"year"の型を確認
+penguins |> 
+  mutate(
+    year = as.character(year)
+    ) |> 
+  count(year)
+
+# "year"を因子型に変更する
+# countで"year"の型を確認
+penguins |> 
+  mutate(
+    year = as.factor(year)
+    ) |> 
+  count(year)
+
+# "year"を数値型に変更する
+# countで"year"の型を確認
+penguins |> 
+  mutate(
+    year = as.numeric(year)
+    ) |> 
+  count(year)
+```
+
+#### ひとつの変数内で水準名を変更する
+
+```{r}
+# "sex"の"male"を"1"に，"female"を"2"に変更する
+# countで"sex"を確認
+penguins |> 
+  mutate(
+    sex = fct_recode(sex, "1" = "male", 
+                          "2" = "female")) |> 
+  count(sex)
+```
+
+#### 他の変数を使って水準名を変更する
+
+```{r}
+# "fruit"と"color"の変数を追加したオブジェクトを作成
+df <- 
+  tribble(
+    　~fruit,     ~color, 
+     "apple",      "red", 
+    "banana",   "yellow",  
+     "melon",     "blue"
+    )
+
+df 
+
+# "fruit"の"melon"の"color"を"green"に変更，それ以外の"color"はそのままとする
+df |> 
+  mutate(color = case_when(
+    fruit == "melon" ~ "green",
+    TRUE ~ color))
+```
+
+#### 水準を並び替える
+
+```{r}
+# "fruit"と"color"の変数を追加したオブジェクトを作成
+df <- 
+  tribble(
+    　~fruit,     ~color, 
+     "apple",      "red", 
+    "banana",   "yellow",  
+     "melon",     "blue"
+    )
+
+df
+
+# "fruit"を"melon"，"banana"，"apple"の順に並び替える
+df |> 
+  mutate(fruit = fct_relevel(fruit,
+                             "melon",
+                             "banana",
+                             "apple")) |> 
+  arrange(fruit)
+```
+
+#### 逆転処理する
+
+```{r}
+# x1～x3，y1～y3の変数を追加したオブジェクトを作成
+df <- 
+  tribble(
+    ~x1, ~x2, ~x3, ~y1, ~y2, ~y3,
+      1,   2,   3,   4,   1,   2,
+      3,   4,   1,   2,   3,   4,
+      1,   2,   3,   4,   1,   2)
+
+# x1～x3を逆転処理する（4件法の場合）
+# countで"x1"と逆転処理した"x1_r"を確認
+df |> 
+  mutate(
+    across(x1:x3,
+           list(r = ~(5 -.))
+           )
+  ) |> 
+  count(x1, x1_r)
+```
+
+
+#### 小数点以下の処理
+
+##### 小数第二位を切り捨てる 
+
+```{r}
+# x1～x2の変数を追加したオブジェクトを作成
+df <- 
+  tribble(
+      ~x1,   ~x2,
+    0.123, 0.901,
+    0.234, 0.890,
+    0.345, 0.789,
+    0.456, 0.678,
+    0.567, 0.567,
+    0.678, 0.456,
+    0.789, 0.345,
+    0.890, 0.234,
+    0.901, 0.123)
+
+# ひとつの変数で小数第二位を切り捨てる
+df |> 
+  mutate(x1_kirisute = trunc(x1 * 100) / 100)
+
+# 複数の変数で小数第二位を切り捨てる
+df |> 
+  mutate(across(starts_with("x"),
+         list(kirisute = ~trunc(. * 100) / 100)))
+```
+
+##### 小数第二位を四捨五入する　★これから
+
+* `round()`は四捨五入ではないため使用しない
+
+```{r}
+
+```
+
+### 変数を要約する（summarize）
+
+* 平均値，標準偏差，人数などを算出する
+
+
+* 平均値，標準偏差などは`na.rm = TRUE`を入れないと欠損がある場合NAになってしまう
+
+* 人数は`!is.na()`を入れることで欠損を抜いて合計する
+
+#### ひとつの要約値をひとつの変数で算出する
+
+```{r}
+# 平均値（mean）
+penguins |> 
+  summarize(bill_length_mm_mean = mean(bill_length_mm, na.rm = TRUE))
+
+# 標準偏差（sd）
+penguins |> 
+  summarize(bill_length_mm_sd = sd(bill_length_mm, na.rm = TRUE))
+
+# 人数（sum）
+penguins |> 
+  summarize(bill_length_mm_n = sum(!is.na(bill_length_mm)))
+```
+
+#### 複数の要約値を複数の変数で算出する
+
+```{r}
+# "bill_length_mm"と"bill_depth_mm"の平均値，標準偏差，人数
+penguins |> 
+  summarize(across(c(bill_length_mm, bill_depth_mm),
+                   list(mean = ~mean(., na.rm = TRUE),
+                        sd   = ~sd(., na.rm = TRUE),
+                        n    = ~sum(!is.na(.)))))
+```
+
+#### 層別に算出する
+
+* 層別に（グループ化して）扱いたいときは`group_by()`を使う
+
+* 層別（グループ化）を解除したいときは`ungroup()`を使う
+
+```{r}
+# "species"ごとに"bill_length_mm"と"bill_depth_mm"の平均値，標準偏差，人数
+penguins |> 
+  group_by(species) |> 
+  summarize(across(c(bill_length_mm, bill_depth_mm),
+                   list(mean = ~mean(., na.rm = TRUE),
+                        sd   = ~sd(., na.rm = TRUE),
+                        n    = ~sum(!is.na(.)))))
+```
+
 
 # ショートカット
 
