@@ -206,7 +206,7 @@ df <-
 
 * サンプルデータの内容（palmerpenguinsパッケージのpenguinsデータ）
   + 8変数344観測値のデータ
-  + species: ペンギンの種類を表す因子型の変数（アデリー，ヒゲ，ジェンツー）
+  + species: ペンギンの種を表す因子型の変数（アデリー，ヒゲ，ジェンツー）
   + island: 南極パーマー諸島の島を表す因子型の変数（ビスコー諸島，ドリーム島，トージャーセン島）
   + bill_length_mm: くちばしの長さを表す実数型の変数（mm）
   + bill_depth_mm: くちばしの厚さを表す実数型の変数（mm）
@@ -224,9 +224,9 @@ penguins
 
 * [R for Data Science（2e）](https://r4ds.hadley.nz/)を参照して作成
 
-### ケースを選択する（filter）
-
 * "## パッケージを読み込み"を実行してから
+
+### ケースを選択する（filter）
 
 #### 選択するシリーズ
 
@@ -236,31 +236,31 @@ penguins
 
 ```{r}
 # "species"が"Adelie"のケースを選択する
-# countで"species"を確認
+# count()で"species"を確認
 penguins |> 
   filter(species == "Adelie") |> 
   count(species)
 
 # "bill_length_mm"が"35以上"のケースを選択する
-# countで"bill_length_mm"を確認
+# count()で"bill_length_mm"を確認
 penguins |> 
   filter(bill_length_mm >= 35) |> 
   count(bill_length_mm)
 
 # "bill_length_mm"が"35超"のケースを選択する
-# countで"bill_length_mm"を確認
+# count()で"bill_length_mm"を確認
 penguins |> 
   filter(bill_length_mm > 35) |> 
   count(bill_length_mm)
 
 # "bill_depth_mm"が"14以下"のケースを選択する
-# countで"bill_depth_mm"を確認
+# count()で"bill_depth_mm"を確認
 penguins |> 
   filter(bill_depth_mm <= 14) |> 
   count(bill_depth_mm)
 
 # "bill_depth_mm"が"35超"のケースを選択する
-# countで"bill_depth_mm"を確認
+# count()で"bill_depth_mm"を確認
 penguins |> 
   filter(bill_depth_mm < 14) |> 
   count(bill_depth_mm)
@@ -274,13 +274,13 @@ penguins |>
 
 ```{r}
 # "species"が"Adelie"で"island"が"Biscoe"のケースを選択する
-# countで"species"と"island"を確認
+# count()で"species"と"island"を確認
 penguins |> 
   filter(species == "Adelie" & island == "Biscoe") |> 
   count(species, island)
 
 # "species"が"Adelie"または"Chinstrap"のケースを選択する
-# countで"species"を確認
+# count()で"species"を確認
 
 # | 
 penguins |> 
@@ -303,31 +303,31 @@ penguins |>
 
 ```{r}
 # "species"が"Adelie"のケースを選択しない
-# countで"species"を確認
+# count()で"species"を確認
 penguins |> 
   filter(species != "Adelie") |> 
   count(species)
 
 # "bill_length_mm"が"35以上"のケースを選択しない
-# countで"bill_length_mm"を確認
+# count()で"bill_length_mm"を確認
 penguins |> 
   filter(!(bill_length_mm >= 35)) |> 
   count(bill_length_mm)
 
 # "bill_length_mm"が"35超"のケースを選択しない
-# countで"bill_length_mm"を確認
+# count()で"bill_length_mm"を確認
 penguins |> 
   filter(!(bill_length_mm > 35)) |> 
   count(bill_length_mm)
 
 # "bill_depth_mm"が"14以下"のケースを選択しない
-# countで"bill_depth_mm"を確認
+# count()で"bill_depth_mm"を確認
 penguins |> 
   filter(!(bill_depth_mm <= 14)) |> 
   count(bill_depth_mm)
 
 # "bill_depth_mm"が"35超"のケースを選択しない
-# countで"bill_depth_mm"を確認
+# count()で"bill_depth_mm"を確認
 penguins |> 
   filter(!(bill_depth_mm < 14)) |> 
   count(bill_depth_mm)
@@ -341,13 +341,13 @@ penguins |>
 
 ```{r}
 # "species"が"Adelie"で"island"が"Biscoe"のケースを選択しない
-# countで"species"と"island"を確認
+# count()で"species"と"island"を確認
 penguins |> 
   filter(!(species == "Adelie" & island == "Biscoe")) |> 
   count(species, island)
 
 # "species"が"Adelie"または"Chinstrap"のケースを選択しない
-# countで"species"を確認
+# count()で"species"を確認
 
 # | 
 penguins |> 
@@ -372,20 +372,19 @@ penguins |>
   count(sex)
 
 # "sex != male"として"male"を選択しないようにする
-# countで"sex"を確認
+# count()で"sex"を確認
 # "NA"も除外されていて"female"のみが選択される
 penguins |> 
   filter(sex != "male") |> 
   count(sex)
 
 # "NA"を除外せず"male"だけを選択しないようにする
-# countで"sex"を確認
+# count()で"sex"を確認
 # "female"と"NA"が選択される
 penguins |> 
   filter(!sex %in% c("male")) |> 
   count(sex)
 ```
-
 
 #### 欠損値
 
@@ -393,7 +392,7 @@ penguins |>
 
 ```{r}
 # "sexがNAのケースを選択する
-# countで"sex"を確認
+# count()で"sex"を確認
 penguins |>
   filter(is.na(sex)) |> 
   count(sex)
@@ -409,7 +408,7 @@ penguins |>
 # drop_na ----------
 
 ## "sexがNAのケースを選択しない
-## countで"sex"を確認
+## count()で"sex"を確認
 penguins |> 
   drop_na(sex) |> 
   count(sex)
@@ -423,7 +422,7 @@ penguins |>
 # filter(!is.na) ----------
 
 ## "sexがNAのケースを選択しない
-## countで"sex"を確認
+## count()で"sex"を確認
 penguins |>
   filter(!is.na(sex)) |> 
   count(sex)
@@ -441,7 +440,7 @@ penguins |>
 
 ```{r}
 # "bill_length_mm"を昇順に並び替える
-# selectで"bill_length_mm"を確認
+# select()で"bill_length_mm"を確認
 penguins |> 
   arrange(bill_length_mm) |> 
   select(bill_length_mm)
@@ -451,7 +450,7 @@ penguins |>
 
 ```{r}
 # "bill_length_mm"を降順に並び替える
-# selectで"bill_length_mm"を確認
+# select()で"bill_length_mm"を確認
 penguins |> 
   arrange(desc(bill_length_mm)) |> 
   select(bill_length_mm)
@@ -461,9 +460,9 @@ penguins |>
 
 * [R for Data Science（2e）](https://r4ds.hadley.nz/)を参照して作成
 
-### 変数を選択する（select）
-
 * "## パッケージを読み込み"を実行してから
+
+### 変数を選択する（select）
 
 * `matches()`を用いた正規表現の詳細は別の章
 
@@ -593,6 +592,20 @@ df |>
   select(matches("x[1-3]"))
 ```
 
+##### 変数名を変えて選択する
+
+* `rename()`と同じように変数名を変えられる
+
+```{r}
+# "bill_length_mm"を"kuchibashi_length_mm"に変更する
+# "bill_length_mm"を"kuchibashi_length_mm"に変更する
+# names()で変数名を確認
+penguins |> 
+  select(kuchibashi_length_mm = bill_length_mm,
+         kuchibashi_depth_mm = bill_depth_mm) |> 
+  names()
+```
+
 #### 選択しないシリーズ
 
 ##### 変数を選択しない
@@ -703,6 +716,60 @@ df |>
   select(!matches("x[1-3]"))
 ```
 
+### 変数名を変える（rename）
+
+#### 変数名をひとつずつ変える
+
+* rename(新しい変数名 = 古い変数名)
+
+```{r}
+# "bill_length_mm"を"kuchibashi_length_mm"に変更する
+# "bill_length_mm"を"kuchibashi_length_mm"に変更する
+# names()で変数名を確認
+penguins |> 
+  rename(kuchibashi_length_mm = bill_length_mm,
+         kuchibashi_depth_mm = bill_depth_mm) |> 
+  names()
+```
+
+#### 条件を指定して変数名を一気に変える
+
+```{r}
+# "bill"から始まる変数のとき，"bill"を"kuchibashi"に変更する
+# names()で変数名を確認
+penguins |> 
+  rename_with(~str_replace(., "bill", "kuchibashi"),
+              starts_with("bill")) |> 
+  names()
+
+# "_mm"で終わる変数のとき，"_mm"を削除する
+# names()で変数名を確認
+penguins |> 
+  rename_with(~str_replace(., "_mm", ""),
+              ends_with("_mm")) |> 
+  names()
+```
+
+#### 変数名に共通の語を一気につける
+
+```{r}
+# "sex"が"male"のとき，"bill"，"flipper"，"body"を含む変数に接頭辞"male_"をつける
+# names()で変数名を確認
+penguins |> 
+  filter(sex == "male") |> 
+  rename_with(~str_c("male_", .),
+              matches("bill|flipper|body")) |> 
+  names()
+
+# "sex"が"male"のとき，"bill"，"flipper"，"body"を含む変数に接尾辞"_male"をつける
+# names()で変数名を確認
+penguins |> 
+  filter(sex == "male") |> 
+  rename_with(~str_c(., "_male"),
+              matches("bill|flipper|body")) |> 
+  names()
+```
+
 ### 変数を追加する（mutate）
 
 #### 変数をひとつ追加する
@@ -713,7 +780,7 @@ df |>
 # "body_mass_kg"を新たに追加する
 # "body_mass_kg"は"body_mass_g"を1000で割ったもの
 # "body_mass_kg"は一番右側に作られる
-# selectで"body_mass_g"と"body_mass_kg"を確認
+# select()で"body_mass_g"と"body_mass_kg"を確認
 penguins |> 
   mutate(body_mass_kg = body_mass_g / 1000) |> 
   select(body_mass_g, body_mass_kg)
@@ -767,7 +834,7 @@ penguins |>
 ```{r}
 # "bill_length_mm_cm"，"flipper_length_mm_cm"を新たに追加する
 # "bill_length_mm_cm"は"bill_length_mm"を10で割ったもの（flipper_lengthも同じ）
-# selectで"bill_length_mm"と"bill_length_mm_cm"，"flipper_length_mm"と"flipper_length_mm_cm"を確認
+# select()で"bill_length_mm"と"bill_length_mm_cm"，"flipper_length_mm"と"flipper_length_mm_cm"を確認
 
 # c()
 penguins |> 
@@ -787,7 +854,7 @@ penguins |>
 ```{r}
 # "body_mass_3000"を新たに追加する
 # "body_mass_3000"は"body_mass_g"が"3000以上"の場合は"1"，そうでない場合は"0"のもの
-# countで"body_mass_g"と"body_mass_3000"を確認
+# count()で"body_mass_g"と"body_mass_3000"を確認
 penguins |> 
   mutate(body_mass_3000 = if_else(body_mass_g >= 3000, 1, 0)) |> 
   count(body_mass_g, body_mass_3000)
@@ -798,7 +865,7 @@ penguins |>
 ```{r}
 # "body_mass_3000"を新たに追加する
 # "body_mass_3000"は"body_mass_g"が"3000以上"の場合は"1"，そうでない場合は"0"のもの
-# countで"body_mass_g"と"body_mass_3000"を確認
+# count()で"body_mass_g"と"body_mass_3000"を確認
 # "body_mass_g"がNAのものは"不明"とする
 penguins |> 
   mutate(
@@ -812,7 +879,7 @@ penguins |>
   count(body_mass_g, body_mass_range)
 ```
 
-#### 変数の型を変更する
+#### 変数の型を変更する ★要確認
 
 * 変数の型
 
@@ -824,7 +891,7 @@ as.numeric|数値型に変更する
 
 ```{r}
 # "year"を文字列型に変更する
-# countで"year"の型を確認
+# count()で"year"の型を確認
 penguins |> 
   mutate(
     year = as.character(year)
@@ -832,7 +899,7 @@ penguins |>
   count(year)
 
 # "year"を因子型に変更する
-# countで"year"の型を確認
+# count()で"year"の型を確認
 penguins |> 
   mutate(
     year = as.factor(year)
@@ -840,7 +907,7 @@ penguins |>
   count(year)
 
 # "year"を数値型に変更する
-# countで"year"の型を確認
+# count()で"year"の型を確認
 penguins |> 
   mutate(
     year = as.numeric(year)
@@ -852,7 +919,7 @@ penguins |>
 
 ```{r}
 # "sex"の"male"を"1"に，"female"を"2"に変更する
-# countで"sex"を確認
+# count()で"sex"を確認
 penguins |> 
   mutate(
     sex = fct_recode(sex, "1" = "male", 
@@ -916,7 +983,7 @@ df <-
       1,   2,   3,   4,   1,   2)
 
 # x1～x3を逆転処理する（4件法の場合）
-# countで"x1"と逆転処理した"x1_r"を確認
+# count()で"x1"と逆転処理した"x1_r"を確認
 df |> 
   mutate(
     across(x1:x3,
@@ -967,7 +1034,6 @@ df |>
 ### 変数を要約する（summarize）
 
 * 平均値，標準偏差，人数などを算出する
-
 
 * 平均値，標準偏差などは`na.rm = TRUE`を入れないと欠損がある場合NAになってしまう
 
