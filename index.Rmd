@@ -228,9 +228,9 @@ penguins
 
 ### ケースを選択する（filter）
 
-#### 選択するシリーズ
+#### 条件をひとつ指定{.tabset}
 
-##### 条件をひとつ指定して選択する
+##### 選択{-}
 
 * `==`（等しい），`>=`（以上），`>`（超），`<=`（以下），`<`（未満）などが使える
 
@@ -266,36 +266,7 @@ penguins |>
   count(bill_depth_mm)
 ```
 
-##### 条件を複数指定して選択する
-
-* `&`（および），`|`（または）などが使える
-
-* `|`のショートカットに`%in%`がある
-
-```{r}
-# "species"が"Adelie"で"island"が"Biscoe"のケースを選択する
-# count()で"species"と"island"を確認
-penguins |> 
-  filter(species == "Adelie" & island == "Biscoe") |> 
-  count(species, island)
-
-# "species"が"Adelie"または"Chinstrap"のケースを選択する
-# count()で"species"を確認
-
-# | 
-penguins |> 
-  filter(species == "Adelie" | species == "Chinstrap") |> 
-  count(species)
-
-# %in% 
-penguins |> 
-  filter(species %in% c("Adelie", "Chinstrap")) |> 
-  count(species)
-```
-
-#### 選択しないシリーズ 
-
-##### 条件をひとつ指定して選択しない
+##### 選択しない{-}
 
 * `==`（等しい），`>=`（以上），`>`（超），`<=`（以下），`<`（未満）などが使える
 
@@ -333,7 +304,36 @@ penguins |>
   count(bill_depth_mm)
 ```
 
-##### 条件を複数指定して選択しない
+#### 条件を複数指定{.tabset}
+
+##### 選択{-}
+
+* `&`（および），`|`（または）などが使える
+
+* `|`のショートカットに`%in%`がある
+
+```{r}
+# "species"が"Adelie"で"island"が"Biscoe"のケースを選択する
+# count()で"species"と"island"を確認
+penguins |> 
+  filter(species == "Adelie" & island == "Biscoe") |> 
+  count(species, island)
+
+# "species"が"Adelie"または"Chinstrap"のケースを選択する
+# count()で"species"を確認
+
+# | 
+penguins |> 
+  filter(species == "Adelie" | species == "Chinstrap") |> 
+  count(species)
+
+# %in% 
+penguins |> 
+  filter(species %in% c("Adelie", "Chinstrap")) |> 
+  count(species)
+```
+
+##### 選択しない{-}
 
 * `&`（および），`|`（または）などが使える
 
@@ -356,11 +356,47 @@ penguins |>
 
 # %in% 
 penguins |> 
-  filter(!(species %in% c("Adelie", "Chinstrap"))) |> 
+  filter(!species %in% c("Adelie", "Chinstrap")) |> 
   count(species)
 ```
 
-##### != を使うときの注意
+#### 水準の条件を指定{.tabset}
+
+##### 選択する{-}
+
+```{r}
+# "fruit"の変数を追加したオブジェクトを作成
+df <- 
+  tribble(
+    ~fruit, 
+      "apple",
+      "banana",
+      "melon",
+      "strawberry",
+      "orange",
+      "peach",
+      "green apple")
+
+df
+
+# "fruit"の中で"apple"という文字を含むケースを選択する
+df |> 
+  filter(str_detect(fruit, "apple"))
+
+# "fruit"の中で"apple"という文字を含むケースを選択しない
+df |> 
+  filter(!str_detect(fruit, "apple"))
+```
+
+##### 選択しない{-}
+
+```{r}
+# "fruit"の中で"apple"という文字を含むケースを選択しない
+df |> 
+  filter(!str_detect(fruit, "apple"))
+```
+
+#### != を使うときの注意
 
 * `filter(sex != "male")"`でfilterするとNAも削除される
 
@@ -386,9 +422,9 @@ penguins |>
   count(sex)
 ```
 
-#### 欠損値
+#### 欠損値{.tabset}
 
-##### 欠損値のみを選択する
+##### 選択する{-}
 
 ```{r}
 # "sexがNAのケースを選択する
@@ -398,7 +434,7 @@ penguins |>
   count(sex)
 ```
 
-##### 欠損値を選択しない
+##### 選択しない{-}
 
 * `drop_na`と`filter(!is.na)`を使う方法がある
 
@@ -434,9 +470,9 @@ penguins |>
   filter(is.na(sex) | is.na(bill_length_mm))
 ```
 
-### ケースを並び替える（arrange）
+### ケースを並び替える（arrange）{.tabset}
 
-#### 昇順に並び替える
+#### 昇順{-}
 
 ```{r}
 # "bill_length_mm"を昇順に並び替える
@@ -446,7 +482,7 @@ penguins |>
   select(bill_length_mm)
 ```
 
-#### 降順に並び替える
+#### 降順{-}
 
 ```{r}
 # "bill_length_mm"を降順に並び替える
@@ -466,9 +502,9 @@ penguins |>
 
 * `matches()`を用いた正規表現の詳細は別の章
 
-#### 選択するシリーズ
+#### 変数をひとつ指定{.tabset}
 
-##### 変数をひとつ選択する
+##### 選択{-}
 
 ```{r}
 # "species"を選択する
@@ -476,7 +512,17 @@ penguins |>
   select(species)
 ```
 
-##### 変数を個別に複数選択する
+##### 選択しない{-}
+
+```{r}
+# "species"を選択しない
+penguins |> 
+  select(!species)
+```
+
+#### 変数を個別に複数指定{.tabset}
+
+##### 選択する{-}
 
 ```{r}
 # "species"，"island"，"year"を選択する
@@ -484,7 +530,17 @@ penguins |>
   select(species, island, year)
 ```
 
-##### 変数を連続で複数選択する
+##### 選択しない{-}
+
+```{r}
+# "species"，"island"，"year"を選択しない
+penguins |> 
+  select(!c(species, island, year))
+```
+
+#### 変数を連続で複数指定{.tabset}
+
+##### 選択する{-}
 
 ```{r}
 # "species"から"bill_length_mm"を選択する
@@ -492,7 +548,17 @@ penguins |>
   select(species:bill_length_mm)
 ```
 
-##### 変数をまとめて複数選択する
+##### 選択しない{-}
+
+```{r}
+# "species"から"bill_length_mm"を選択しない
+penguins |> 
+  select(!species:bill_length_mm)
+```
+
+#### 変数をまとめて複数指定{.tabset}
+
+##### 選択する{-}
 
 ```{r}
 # "species"，"year"をまとめて選択する
@@ -510,7 +576,25 @@ penguins |>
   select(any_of(obs))
 ```
 
-##### （参考）all_ofとany_ofの違い
+##### 選択しない{-}
+
+```{r}
+# "species"，"year"をまとめて選択しない
+
+# "species"，"year"を含むオブジェクトを作成
+obs <- 
+  c("species", "year")
+
+# all_of
+penguins |> 
+  select(!all_of(obs))
+
+# any_of
+penguins |> 
+  select(!any_of(obs))
+```
+
+##### （参考）all_ofとany_ofの違い{-}
 
 ```{r eval=FALSE}
 # ペンギンデータに含まれていない"weight"が入ったobsを作成
@@ -526,7 +610,9 @@ penguins |>
   select(any_of(obs))
 ```
 
-##### 特定の文字で始まる変数を選択する
+#### 特定の文字で始まる変数を指定{.tabset}
+
+##### 選択する{-}
 
 ```{r}
 # "bill"で始まる変数を選択する
@@ -540,7 +626,23 @@ penguins |>
   select(matches("^bill"))
 ```
 
-##### 特定の文字で終わる変数を選択する
+##### 選択しない{-}
+
+```{r}
+# "bill"で始まる変数を選択しない
+
+# starts_with
+penguins |> 
+  select(!starts_with("bill"))
+
+# matches
+penguins |> 
+  select(!matches("^bill"))
+```
+
+#### 特定の文字で終わる変数を指定{.tabset}
+
+##### 選択する{-}
 
 ```{r}
 # "mm"で終わる変数を選択する
@@ -554,7 +656,23 @@ penguins |>
   select(matches("mm$"))
 ```
 
-##### 特定の文字を含む変数を選択する
+##### 選択しない{-}
+
+```{r}
+# "mm"で終わる変数を選択しない
+
+# ends_with
+penguins |> 
+  select(!ends_with("mm"))
+
+# matches
+penguins |> 
+  select(!matches("mm$"))
+```
+
+#### 特定の文字を含む変数を指定{.tabset}
+
+##### 選択する{-}
 
 ```{r}
 # "length"を含む変数を選択する
@@ -568,7 +686,23 @@ penguins |>
   select(matches("length"))
 ```
 
-##### 番号のついた変数を選択する
+##### 選択しない{-}
+
+```{r}
+# "length"を含む変数を選択しない
+
+# contains
+penguins |> 
+  select(!contains("length"))
+
+# matches
+penguins |> 
+  select(!matches("length"))
+```
+
+#### 番号のついた変数を指定{.tabset}
+
+##### 選択する{-}
 
 ```{r}
 # x1～x6の変数を追加したオブジェクトを作成
@@ -592,107 +726,7 @@ df |>
   select(matches("x[1-3]"))
 ```
 
-##### 変数名を変えて選択する
-
-* `rename()`と同じように変数名を変えられる
-
-```{r}
-# "bill_length_mm"を"kuchibashi_length_mm"に変更する
-# "bill_length_mm"を"kuchibashi_length_mm"に変更する
-# names()で変数名を確認
-penguins |> 
-  select(kuchibashi_length_mm = bill_length_mm,
-         kuchibashi_depth_mm = bill_depth_mm) |> 
-  names()
-```
-
-#### 選択しないシリーズ
-
-##### 変数を選択しない
-
-```{r}
-# "species"を選択しない
-penguins |> 
-  select(!species)
-```
-
-##### 変数を個別に複数選択しない
-
-```{r}
-# "species"，"island"，"year"を選択しない
-penguins |> 
-  select(!c(species, island, year))
-```
-
-##### 変数を連続で複数選択しない
-
-```{r}
-# "species"から"bill_length_mm"を選択しない
-penguins |> 
-  select(!species:bill_length_mm)
-```
-
-##### 変数をまとめて複数選択しない
-
-```{r}
-# "species"，"year"をまとめて選択しない
-
-# "species"，"year"を含むオブジェクトを作成
-obs <- 
-  c("species", "year")
-
-# all_of
-penguins |> 
-  select(!all_of(obs))
-
-# any_of
-penguins |> 
-  select(!any_of(obs))
-```
-
-##### 特定の文字で始まる変数を選択しない
-
-```{r}
-# "bill"で始まる変数を選択しない
-
-# starts_with
-penguins |> 
-  select(!starts_with("bill"))
-
-# matches
-penguins |> 
-  select(!matches("^bill"))
-```
-
-##### 特定の文字で終わる変数を選択しない
-
-```{r}
-# "mm"で終わる変数を選択しない
-
-# ends_with
-penguins |> 
-  select(!ends_with("mm"))
-
-# matches
-penguins |> 
-  select(!matches("mm$"))
-```
-
-##### 特定の文字を含む変数を選択しない
-
-```{r}
-# "length"を含む変数を選択しない
-
-# contains
-penguins |> 
-  select(!contains("length"))
-
-# matches
-penguins |> 
-  select(!matches("length"))
-```
-
-##### 番号のついた変数を選択しない
+##### 選択しない{-}
 
 ```{r}
 # x1～x6の変数を追加したオブジェクトを作成
@@ -714,6 +748,20 @@ df |>
 # matches
 df |> 
   select(!matches("x[1-3]"))
+```
+
+#### 変数名を変えて選択する
+
+* `rename()`と同じように変数名を変えられる
+
+```{r}
+# "bill_length_mm"を"kuchibashi_length_mm"に変更する
+# "bill_length_mm"を"kuchibashi_length_mm"に変更する
+# names()で変数名を確認
+penguins |> 
+  select(kuchibashi_length_mm = bill_length_mm,
+         kuchibashi_depth_mm = bill_depth_mm) |> 
+  names()
 ```
 
 ### 変数名を変える（rename）
@@ -994,9 +1042,9 @@ df |>
 ```
 
 
-#### 小数点以下の処理
+#### 小数点以下の処理{.tabset}
 
-##### 小数第二位を切り捨てる 
+##### 小数第二位を切り捨てる{-} 
 
 ```{r}
 # x1～x2の変数を追加したオブジェクトを作成
@@ -1023,7 +1071,7 @@ df |>
          list(kirisute = ~trunc(. * 100) / 100)))
 ```
 
-##### 小数第二位を四捨五入する　★これから
+##### 小数第二位を四捨五入する{-}　★これから
 
 * `round()`は四捨五入ではないため使用しない
 
@@ -1082,6 +1130,184 @@ penguins |>
                         n    = ~sum(!is.na(.)))))
 ```
 
+### データセットを縦に長くする（pivot_longer）
+
+#### 基本形
+
+* `cols`にはピボットする必要がある変数を入れる
+ + `select()`と同じでヘルパー関数も使用可能
+
+* `names_to`にはcolsで選んだ変数名を格納する変数名をつける
+ + もとの変数名は新しい変数の値になる
+
+* `values_to`にはcolsで選んだセルを格納する変数名をつける
+
+![Figure20.pivot_longerの説明1（Wickham & Grolemund, Figure6.4）](images/pivot_longer_1.PNG)
+
+```{r}
+# var，col1，col2の変数を追加したオブジェクトを作成
+df <- tribble(
+  ~var, ~col1, ~col2,
+   "A",     1,     2,
+   "B",     3,     4,
+   "C",     5,     6
+)
+
+df
+
+# col1とcol2をピボットしたいので，cols = col1:col2とする
+# 選んだ変数名を"names"という名前の変数に格納したいので，names_to = "names"とする
+# 選んだ変数の値を"value"という名前の変数に格納したいので，values_to = "value"とする
+df |> 
+  pivot_longer(
+    cols = col1:col2, 
+    names_to = "names", 
+    values_to = "value"
+  )
+```
+
+#### 変数名を分割する
+
+##### ひとつの変数にまとめる
+
+* `names_to`にはcolsで選んだ変数名を格納する変数名をつける
+ + もとの変数名は新しい変数の値になる
+ + 複数の変数名を指定できる
+ 
+* `names_sep`には変数名を分割する区切りを入れる
+
+![Figure21.pivot_longerの説明2（Wickham & Grolemund, Figure6.6）](images/pivot_longer_2.PNG)
+
+```{r}
+# var，x_1，y_2の変数を追加したオブジェクトを作成
+df <- tribble(
+  ~var, ~x_1, ~y_2,
+   "A",    1,    2,
+   "B",    3,    4,
+   "C",    5,    6
+)
+
+df
+
+# var以外の変数をピボットしたいので，cols = !varとする
+# 選んだ変数名を"name"，"number"という名前の変数に格納したいので，names_to = c("name", "number")とする
+# 選んだ変数の値を"value"という名前の変数に格納したいので，values_to = "value"とする
+df |> 
+  pivot_longer(
+    cols = !var, 
+    names_to = c("name", "number"), 
+    names_sep = "_",
+    values_to = "value"
+  )
+```
+
+##### もとの変数名から変数を作る
+
+* `names_to`にはcolsで選んだ変数名を格納する変数名をつける
+ + もとの変数名は新しい変数の値になる
+ + 複数の変数名を指定できる
+ + もとの変数名の最初のまとまりを新しい変数名として使う場合に`".value"`を使う
+ 
+* `names_sep`には変数名を分割する区切りを入れる
+
+![Figure22.pivot_longerの説明3（Wickham & Grolemund, Figure6.7）](images/pivot_longer_3.PNG)
+
+```{r}
+# var，x_1，x_2，y_1，y_2の変数を追加したオブジェクトを作成
+df <- tribble(
+  ~var, ~x_1, ~x_2, ~y_1, ~y_2,
+   "A",    1,    2,    3,    4,
+   "B",    5,    6,    7,    8
+)
+
+df
+
+# var以外の変数をピボットしたいので，cols = !varとする
+# 選んだ変数名のうち"x_1"か"x_2"ならば"x"，"y_1"か"y_2"ならば"y"という名前の変数に格納したいので，names_toに".value"を入れる
+# 加えて"x_1"か"y_1"ならば"1"，"x_2"か"y_2"ならば"2"を"id"という名前の変数に格納したいので，names_toに"id"も入れる
+# 選んだ変数の値を"value"という名前の変数に格納したいので，values_to = "value"とする
+df |> 
+  pivot_longer(
+    cols = !var, 
+    names_to = c(".value", "id"), 
+    names_sep = "_"
+    ) |> 
+  select(var, x:y, id)
+```
+
+#### 変数名をもっと自由に分割する　★作成中
+
+* `names_pattern`で変数名を自由に分割できる
+
+```{r}
+# var，x_1，x_2，y_1，y_2の変数を追加したオブジェクトを作成
+df <- tribble(
+  ~var, ~x_1, ~x_2, ~y_1, ~y_2,
+   "A",    1,    2,    3,    4,
+   "B",    5,    6,    7,    8
+)
+
+df
+
+df |> 
+  pivot_longer(
+    cols = !var, 
+    names_prefix = "x_|y_"
+    ) 
+```
+
+#### 各変数名の先頭から指定の文字を削除
+
+* `names_prefix`で指定の文字を削除できる
+
+```{r}
+# var，x_1，x_2，y_1，y_2の変数を追加したオブジェクトを作成
+df <- tribble(
+  ~var, ~x_1, ~x_2, ~y_1, ~y_2,
+   "A",    1,    2,    3,    4,
+   "B",    5,    6,    7,    8
+)
+
+df
+
+df |> 
+  pivot_longer(
+    cols = !var, 
+    names_prefix = "x_|y_"
+    ) 
+```
+
+#### 欠損ケースを除外する 
+
+```{r}
+# var，x_1，x_2，y_1，y_2の変数を追加したオブジェクトを作成
+# varが"C"のケースは，すべての変数が欠損している
+df <- tribble(
+  ~var, ~x_1, ~x_2, ~y_1, ~y_2,
+   "A",    1,    2,    3,    4,
+   "B",    5,    6,    7,    8,
+   "C",   NA,   NA,   NA,   NA
+)
+
+df
+
+# values_drop_naを入れない場合
+df |> 
+  pivot_longer(
+    cols = !var, 
+    names_to = c(".value", "id"), 
+    names_sep = "_")
+
+# values_drop_naを入れた場合
+df |> 
+  pivot_longer(
+    cols = !var, 
+    names_to = c(".value", "id"), 
+    names_sep = "_",
+    values_drop_na = TRUE)
+```
+
+### データセットを横に広くする（pivot_wider）
 
 # ショートカット
 
