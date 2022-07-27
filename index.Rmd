@@ -1079,7 +1079,7 @@ df |>
 
 ```
 
-### 変数を要約する（summarize）
+## 変数を要約する（summarize）
 
 * 平均値，標準偏差，人数などを算出する
 
@@ -1087,7 +1087,7 @@ df |>
 
 * 人数は`!is.na()`を入れることで欠損を抜いて合計する
 
-#### ひとつの要約値をひとつの変数で算出する
+### ひとつの要約値をひとつの変数で算出する
 
 ```{r}
 # 平均値（mean）
@@ -1103,7 +1103,7 @@ penguins |>
   summarize(bill_length_mm_n = sum(!is.na(bill_length_mm)))
 ```
 
-#### 複数の要約値を複数の変数で算出する
+### 複数の要約値を複数の変数で算出する
 
 ```{r}
 # "bill_length_mm"と"bill_depth_mm"の平均値，標準偏差，人数
@@ -1114,7 +1114,7 @@ penguins |>
                         n    = ~sum(!is.na(.)))))
 ```
 
-#### 層別に算出する
+### 層別に算出する
 
 * 層別に（グループ化して）扱いたいときは`group_by()`を使う
 
@@ -1130,18 +1130,24 @@ penguins |>
                         n    = ~sum(!is.na(.)))))
 ```
 
-### データセットを縦に長くする（pivot_longer）
+## データセットを縦に長くする（pivot_longer）
 
-#### 基本形
+### 基本形
 
+* `pivot_longer(data, cols, names_to = "name", values_to = "value")`
+  + （例）Figure20 `pivot_longer(cols = col1:col2, names_to = "names", values_to = "value")`
+  
 * `cols`にはピボットする必要がある変数を入れる
- + `select()`と同じでヘルパー関数も使用可能
+  + `select()`と同じでヘルパー関数も使用可能
+  + （例）cols = col1:col2 
 
 * `names_to`にはcolsで選んだ変数名を格納する変数名をつける
- + もとの変数名は新しい変数の値になる
+  + もとの変数名は新しい変数の値になる
+  + （例）names_to = "names"    
 
-* `values_to`にはcolsで選んだセルを格納する変数名をつける
-
+* `values_to`にはcolsで選んだ値を格納する変数名をつける
+  + （例）values_to = "value"
+  
 ![Figure20.pivot_longerの説明1（Wickham & Grolemund, Figure6.4）](images/pivot_longer_1.PNG)
 
 ```{r}
@@ -1166,16 +1172,28 @@ df |>
   )
 ```
 
-#### 変数名を分割する
+### 変数名を分割する
 
-##### ひとつの変数にまとめる
+#### 値をひとつの変数にまとめる
 
+* `pivot_longer(data, cols, names_to = "name", names_sep = NULL, values_to = "value")`
+  + （例）Figure21 `pivot_longer(cols = !var, names_to = c("name", "number"), names_sep = "_", values_to = "value")`
+
+* `cols`にはピボットする必要がある変数を入れる
+  + `select()`と同じでヘルパー関数も使用可能
+  + （例）cols = !var 
+  
 * `names_to`にはcolsで選んだ変数名を格納する変数名をつける
- + もとの変数名は新しい変数の値になる
- + 複数の変数名を指定できる
+  + もとの変数名は新しい変数の値になる
+  + 複数の変数名を指定できる
+  + （例）names_to = c("name", "number")   
  
 * `names_sep`には変数名を分割する区切りを入れる
-
+  + （例）names_sep = "_"
+  
+* `values_to`にはcolsで選んだ値を格納する変数名をつける
+  + （例）values_to = "value"
+  
 ![Figure21.pivot_longerの説明2（Wickham & Grolemund, Figure6.6）](images/pivot_longer_2.PNG)
 
 ```{r}
@@ -1201,14 +1219,23 @@ df |>
   )
 ```
 
-##### もとの変数名から変数を作る
+#### もとの変数名から変数を作る
 
+* `pivot_longer(data, cols, names_to = "name", names_sep = NULL)`
+  + （例）Figure22 `pivot_longer(cols = !var, names_to = c(".value", "id"), names_sep = "_")`
+
+* `cols`にはピボットする必要がある変数を入れる
+  + `select()`と同じでヘルパー関数も使用可能
+  + （例）cols = !var 
+  
 * `names_to`にはcolsで選んだ変数名を格納する変数名をつける
- + もとの変数名は新しい変数の値になる
- + 複数の変数名を指定できる
- + もとの変数名の最初のまとまりを新しい変数名として使う場合に`".value"`を使う
+  + もとの変数名は新しい変数の値になる
+  + 複数の変数名を指定できる
+  + もとの変数名のまとまりを新しい変数名として使う場合に`".value"`を使う
+  + （例）names_to = c(".value", "id")  
  
 * `names_sep`には変数名を分割する区切りを入れる
+  + （例）names_sep = "_"
 
 ![Figure22.pivot_longerの説明3（Wickham & Grolemund, Figure6.7）](images/pivot_longer_3.PNG)
 
@@ -1225,7 +1252,6 @@ df
 # var以外の変数をピボットしたいので，cols = !varとする
 # 選んだ変数名のうち"x_1"か"x_2"ならば"x"，"y_1"か"y_2"ならば"y"という名前の変数に格納したいので，names_toに".value"を入れる
 # 加えて"x_1"か"y_1"ならば"1"，"x_2"か"y_2"ならば"2"を"id"という名前の変数に格納したいので，names_toに"id"も入れる
-# 選んだ変数の値を"value"という名前の変数に格納したいので，values_to = "value"とする
 df |> 
   pivot_longer(
     cols = !var, 
@@ -1235,28 +1261,37 @@ df |>
   select(var, x:y, id)
 ```
 
-#### 変数名をもっと自由に分割する　★作成中
+### 変数名を自由に分割する　★作成中
 
 * `names_pattern`で変数名を自由に分割できる
 
+* 正規表現の詳細は別の章
+
 ```{r}
-# var，x_1，x_2，y_1，y_2の変数を追加したオブジェクトを作成
+# var，x_m，x_sd，x_all_percent, y_m，y_sd, y_all_percentの変数を追加したオブジェクトを作成
 df <- tribble(
-  ~var, ~x_1, ~x_2, ~y_1, ~y_2,
-   "A",    1,    2,    3,    4,
-   "B",    5,    6,    7,    8
+  ~var, ~x_m, ~x_sd, ~x_all_percent, ~y_m, ~y_sd, ~y_all_percent,
+   "A",    1,    2,               3,    4,     5,              6,
+   "B",    7,    8,               9,   10,    11,             12
 )
 
 df
 
+# var以外の変数をピボットしたいので，cols = !varとする
+# 選んだ変数名のうち"x_m"か"x_sd"ならば"x"，"y_1"か"y_2"ならば"y"で"item"という名前の変数に格納したいので，names_toに"item"を入れる
+# 加えて"m"，"sd"，"all_percent"という名前の変数を作りたいので，names_toに".value"も入れる
+# "x_m"，"x_sd"，"x_all_percent"ならば"x_"，"y_m"，"y_sd"，"y_all_percent"ならば"y_"で分割したいので，names_patternに"(.{1})_(.+)"を入れる
+# "(.{1})_(.+)"とは"任意の1文字_任意の文字を任意の文字数"ということを意味する
+
 df |> 
   pivot_longer(
     cols = !var, 
-    names_prefix = "x_|y_"
+    names_to = c("item", ".value"), 
+    names_pattern = "(.{1})_(.+)"
     ) 
 ```
 
-#### 各変数名の先頭から指定の文字を削除
+### 各変数名の先頭から指定の文字を削除
 
 * `names_prefix`で指定の文字を削除できる
 
@@ -1277,7 +1312,9 @@ df |>
     ) 
 ```
 
-#### 欠損ケースを除外する 
+### 欠損ケースを除外する 
+
+* `values_drop_na`で欠損ケースを削除できる
 
 ```{r}
 # var，x_1，x_2，y_1，y_2の変数を追加したオブジェクトを作成
@@ -1307,7 +1344,80 @@ df |>
     values_drop_na = TRUE)
 ```
 
-### データセットを横に広くする（pivot_wider）
+## データセットを横に広くする（pivot_wider）
+
+### 基本形
+
+* `pivot_wider(data, id_cols = NULL, names_from = name, values_from = value)`
+  + （例）`pivot_wider(names_from = name, values_from = value)`
+
+* `names_from`には新しく変数名になる変数を入れる
+  + （例）names_from = name  
+
+* `values_from`には変形したい値を入れる
+  + （例）values_from = value
+  
+```{r}
+# id，name，valueの変数を追加したオブジェクトを作成
+df <- tribble(
+  ~id, ~name, ~value,
+   "A",  "x",      1,
+   "B",  "y",      2,
+   "B",  "x",      3,
+　 "A",  "y",      4,
+   "A",  "z",      5)
+
+df
+
+# "name"に入っている値を変数名にしたいので，names_from = nameとする
+# "value"に入っている値を変形に使いたいので，values_from = valueとする
+df |> 
+  pivot_wider(
+    names_from = name, 
+    values_from = value
+  )
+
+# 最初からname，valueという変数であれば，names_fromとvalues_fromは省略可能
+df |> 
+  pivot_wider()
+```
+
+### 変数名を分割する
+
+#### 変数を組み合わせた変数名を作る
+
+* `pivot_wider(data, id_cols = NULL, names_from = name, values_from = value)`
+  + （例）`pivot_wider(names_from = c(item, answer), values_from = percent)`
+
+* `names_from`には新しく変数名になる変数を入れる
+  + （例）names_from = c(item, answer) 
+
+* `values_from`には変形したい値を入れる
+  + （例）values_from = percent
+  
+```{r}
+# item，answer，percentの変数を追加したオブジェクトを作成
+df <- tribble(
+  ~item, ~answer, ~percent,
+   "A",  1,      10,
+   "A",  2,      40,
+   "A",  3,      40,
+　 "A",  4,      10,
+   "B",  1,      10,
+   "B",  2,      40,
+   "B",  3,      40,
+   "B",  4,      10)
+
+df
+
+# "item"と"answer"に入っている値を変数名にしたいので，names_from = c(item, answer)とする
+# "percent"に入っている値を変形に使いたいので，values_from = percentとする
+df |> 
+  pivot_wider(
+    names_from = c(item, answer), 
+    values_from = percent
+  )
+```
 
 # ショートカット
 
