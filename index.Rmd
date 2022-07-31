@@ -1267,6 +1267,18 @@ df |>
 
 * 正規表現の詳細は別の章
 
+* 正規表現のよく使う例
+  + [RStudio Cheatsheets](https://www.rstudio.com/resources/cheatsheets/)のうちString manipulation with stringr cheatsheetを参照
+
+正規表現|用途|用例|結果
+----|----|----|----
+.|新しい行を除くすべての文字|"."|**abc ABC 123 .!?\(){}**
+^a|文字列で始まる|"^a"|**a**aa
+a\$|文字列で終わる|"a$"|aa**a**
+a+|1以上|"a+"|.**a**.**aa**.**aaa**
+a{n}|n|"a{2}"|.a.**aa**.**aa**a
+a{n,}|n以上|"a{2,}"|.a.**aa**.**aaa**
+
 ```{r}
 # var，x_m，x_sd，x_all_percent, y_m，y_sd, y_all_percentの変数を追加したオブジェクトを作成
 df <- tribble(
@@ -1418,6 +1430,255 @@ df |>
     values_from = percent
   )
 ```
+
+## 正規表現
+
+* 正規表現
+  + [RStudio Cheatsheets](https://www.rstudio.com/resources/cheatsheets/)のうちString manipulation with stringr cheatsheetを参照
+
+### 文字列の一致（MATCH CHARACTERS）
+
+#### 準備
+
+```{r}
+library(stringr)
+
+sample_see <- c("abc ABC 123\t.!?\\(){}\n")
+```
+
+#### スペース
+
+* any whitespace
+
+* `\s`を使う
+
+```{r}
+# スペース
+str_view_all(sample_see, "\\s")
+```
+
+#### 数字
+
+* any digit
+
+* `\d`を使う
+
+```{r}
+# 数字
+str_view_all(sample_see, "\\d")
+```
+
+#### 文字
+
+* any word character
+
+* `\w`を使う
+
+```{r}
+# 文字
+str_view_all(sample_see, "\\w")
+```
+
+#### 小文字
+
+* lowercase letters
+
+* `[:lower:]`を使う
+
+```{r}
+# 小文字
+str_view_all(sample_see, "[:lower:]")
+```
+
+#### 大文字
+
+* uppercase letters
+
+* `[:upper:]`を使う
+
+```{r}
+# 大文字
+str_view_all(sample_see, "[:upper:]")
+```
+
+#### 句読点
+
+* punctuation
+
+* `[:punct:]`を使う
+
+```{r}
+# 句読点
+str_view_all(sample_see, "[:punct:]")
+```
+
+#### すべての文字
+
+* every character except a new line
+
+* `.`を使う
+
+```{r}
+# 新しい行を除くすべての文字
+str_view_all(sample_see, ".")
+```
+
+### 代替構成体（ALTERNATES）
+
+#### 準備
+
+```{r}
+sample_alt <- c("abcde")
+```
+
+#### または
+
+* or
+
+* `ab|d`を使う
+
+```{r}
+# "ab"または"d"がつく文字列
+str_view_all(sample_alt, "ab|d")
+```
+
+#### いずれか
+
+* one of
+
+* `[abe]`を使う
+
+```{r}
+# "a"または"b"または"e"がつく文字列
+str_view_all(sample_alt, "[abe]")
+```
+
+#### 以外
+
+* anything but
+
+* `[^abe]`を使う
+
+```{r}
+# "a"または"b"または"e"がつかない文字列
+str_view_all(sample_alt, "[^abe]")
+```
+
+#### 範囲
+
+* range
+
+* `[a-c]`を使う
+
+```{r}
+# "a"～"c"の文字列
+str_view_all(sample_alt, "[a-c]")
+```
+
+### アンカー（ANCHORS）
+
+#### 準備
+
+```{r}
+sample_anchor <- c("aaa")
+```
+
+#### 文字列で始まる
+
+* start of string
+
+* `^a`を使う
+
+```{r}
+# "a"で始まる文字列
+str_view_all(sample_anchor, "^a")
+```
+
+#### 文字列で終わる
+
+* end of string
+
+* `a$`を使う
+
+```{r}
+# "a"で終わる文字列
+str_view_all(sample_anchor, "a$")
+```
+
+### 数量詞（QUANTIFIERS）
+
+#### 準備
+
+```{r}
+sample_quant <- c(".a.aa.aaa")
+```
+
+#### 文字が0か1
+
+* zero or one
+
+* `a?`を使う
+
+```{r}
+# "a"が0か1
+str_view_all(sample_quant, "a?")
+```
+
+#### 文字が0以上
+
+* zero or more
+
+* `a*`を使う
+
+```{r}
+# "a"が0以上
+str_view_all(sample_quant, "a*")
+```
+
+#### 文字が1以上
+
+* one or more
+
+* `a+`を使う
+
+```{r}
+# "a"が1以上
+str_view_all(sample_quant, "a+")
+```
+
+#### 文字がn個
+
+* exactly n
+
+* `a{n}`を使う
+
+```{r}
+# "a"が2個
+str_view_all(sample_quant, "a{2}")
+```
+
+#### 文字がn個以上
+
+* n or more
+
+* `a{n,}`を使う
+
+```{r}
+# "a"が2個以上
+str_view_all(sample_quant, "a{2,}")
+```
+
+#### 文字がnとmの間以上
+
+* between n and m
+
+* `a{n,m}`を使う
+
+```{r}
+# "a"が2～4個
+str_view_all(sample_quant, "a{2,4}")
+```
+
 
 # ショートカット
 
