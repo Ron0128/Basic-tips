@@ -1431,6 +1431,150 @@ df |>
   )
 ```
 
+## データの連結
+
+### 横に連結（join）
+
+#### 連結の種類
+
+##### 両データフレームで一致するケースと変数を保持（inner_join）
+
+* 両データフレームで一致するケースと変数が保持される
+
+![Figure23.inner_joinの説明（Wickham & Grolemund, 13.5.1）](images/join_1.PNG)
+
+```{r}
+x <- tribble(
+  ~key, ~val_x,
+     1, "x1",
+     2, "x2",
+     3, "x3"
+)
+
+x
+
+y <- tribble(
+  ~key, ~val_y,
+     1, "y1",
+     2, "y2",
+     4, "y3"
+)
+
+y
+
+x |> 
+  inner_join(y, by = "key")
+```
+
+##### 左のデータフレームのケースと両変数を保持（left_join）
+
+* 左のデータフレームのケースと両変数が保持され，一致しないケースはNAになる
+
+* 最も一般的に使用される
+
+![Figure24.left_joinの説明（Wickham & Grolemund, 13.5.2）](images/join_2.PNG)
+
+```{r}
+x |> 
+  left_join(y, by = "key")
+```
+
+##### 右のデータフレームのケースと両変数を保持（right_join）
+
+* 右のデータフレームのケースと両変数が保持され，一致しないケースはNAになる
+
+![Figure25.right_joinの説明（Wickham & Grolemund, 13.5.2）](images/join_3.PNG)
+
+```{r}
+x |> 
+  right_join(y, by = "key")
+```
+
+##### 両データフレームのすべてのケースと変数を保持（full_join）
+
+* 両データフレームのケースと変数が保持され，一致しないケースはNAになる
+
+![Figure26.full_joinの説明（Wickham & Grolemund, 13.5.2）](images/join_4.PNG)
+
+```{r}
+x |> 
+  full_join(y, by = "key")
+```
+
+##### 左のデータフレームに一致するケースと変数を保持（semi_join）
+
+* 左のデータフレームのうち，右のデータフレームと一致するケースと変数が保持される
+
+![Figure27.semi_joinの説明（Wickham & Grolemund, 13.5.2）](images/join_5.PNG)
+
+```{r}
+x |> 
+  semi_join(y, by = "key")
+```
+
+##### 左のデータフレームに一致しないケースと変数を保持（anti_join）
+
+* 左のデータフレームのうち，右のデータフレームと一致しないケースと変数が保持される
+
+![Figure28.anti_joinの説明（Wickham & Grolemund, 13.5.2）](images/join_6.PNG)
+
+```{r}
+x |> 
+  anti_join(y, by = "key")
+```
+
+#### キーの種類
+
+##### 複数キーによる連結
+
+* キーが一意ではないときは`by = c("a", "b")`と複数指定できる
+
+```{r}
+x <- tribble(
+  ~key, ~key2, ~val_x,
+     1,   "A",   "x1",
+     2,   "A",   "x2",
+     2,   "B",   "x3"
+)
+
+x
+
+y <- tribble(
+  ~key, ~key2, ~val_y,
+     1,   "A",   "y1",
+     2,   "A",   "y2",
+     2,   "C",   "y3"
+)
+
+x |> 
+  left_join(y, by = c("key", "key2"))
+```
+
+##### 異なる名前のキーによる連結
+
+* キーの名前が異なるときは`by = c("a" = "b")`と指定できる
+
+```{r}
+x <- tribble(
+  ~key, ~val_x,
+     1,   "x1",
+     2,   "x2",
+     3,   "x3"
+)
+
+x
+
+y <- tribble(
+  ~id, ~val_y,
+     1,   "y1",
+     2,   "y2",
+     4,   "y3"
+)
+
+x |> 
+  left_join(y, by = c("key" = "id"))
+```
+
 ## 正規表現
 
 * 正規表現
