@@ -1575,6 +1575,67 @@ x |>
   left_join(y, by = c("key" = "id"))
 ```
 
+### 横に連結（bind_rows）
+
+```{r}
+x <- tribble(
+  ~key, ~val_x,
+     1,   "x1",
+     2,   "x2",
+     3,   "x3"
+)
+
+x
+
+y <- tribble(
+  ~key, ~val_x,
+     4,   "y1",
+     5,   "y2",
+     6,   "y3"
+)
+
+x |> 
+  bind_rows(y)
+```
+
+## 論理ベクトル
+
+### ひとつの条件（if_else）
+
+* ある値のときにa，そうでないときにbと条件指定したい場合は`if_else`が使える
+
+```{r}
+# "flag"変数に"bill_length_mm"が"35以上"のときに，そうでないときに0を入れる
+# count()で"bill_length_mm"と"flag"を確認
+# print()で20行目まで確認
+penguins |> 
+  mutate(flag = if_else(bill_length_mm >= 35, 1, 0)) |> 
+  count(bill_length_mm, flag) |> 
+  print(n = 20)
+```
+
+### 複数の条件（case_when）★作成中
+
+* ある値のときにa，ある値のときにb，ある値のときにcと条件指定したい場合は`case_when`が使える
+
+```{r}
+# "flag"変数に"bill_length_mm"が"50以上"のときに"50-"，40以上のときに"40-50"，30以上のときに"30-40"を入れる
+# count()で"bill_length_mm"と"flag"を確認
+penguins |> 
+  mutate(flag = case_when(bill_length_mm >= 50 ~ "50-",
+                          bill_length_mm >= 40 ~ "40-50",
+                          bill_length_mm >= 30 ~ "30-40")) |> 
+  count(bill_length_mm, flag)
+
+# "flag"変数に"bill_length_mm"が"50以上"のときに"50-"，40以上のときに"40-50"，30以上のときに"30-40"を入れる
+# count()で"bill_length_mm"と"flag"を確認
+penguins |> 
+  mutate(flag = case_when(bill_length_mm >= 50 ~ "50-",
+                          bill_length_mm >= 40 ~ "40-50",
+                          bill_length_mm >= 30 ~ "30-40")) |> 
+  count(bill_length_mm, flag)
+```
+
 ## 正規表現
 
 * 正規表現
