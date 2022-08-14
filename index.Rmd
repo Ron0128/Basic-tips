@@ -360,9 +360,43 @@ penguins |>
   count(species)
 ```
 
+#### 条件をまとめて複数指定{.tabset}
+
+##### 選択{-}
+
+```{r}
+# "species"が"Adelie"または"Chinstrap"のケースをまとめて選択する
+# count()で"species"を確認
+
+# "Adelie"，"Chinstrap"を含むオブジェクトを作成
+obs <- 
+  c("Adelie", "Chinstrap")
+
+# %in% 
+penguins |> 
+  filter(species %in% obs) |> 
+  count(species)
+```
+
+##### 選択しない{-}
+
+```{r}
+# "species"が"Adelie"または"Chinstrap"のケースをまとめて選択する
+# count()で"species"を確認
+
+# "Adelie"，"Chinstrap"を含むオブジェクトを作成
+obs <- 
+  c("Adelie", "Chinstrap")
+
+# %in% 
+penguins |> 
+  filter(!species %in% obs) |> 
+  count(species)
+```
+
 #### 水準の条件を指定{.tabset}
 
-##### 選択する{-}
+##### 選択{-}
 
 ```{r}
 # "fruit"の変数を追加したオブジェクトを作成
@@ -382,10 +416,6 @@ df
 # "fruit"の中で"apple"という文字を含むケースを選択する
 df |> 
   filter(str_detect(fruit, "apple"))
-
-# "fruit"の中で"apple"という文字を含むケースを選択しない
-df |> 
-  filter(!str_detect(fruit, "apple"))
 ```
 
 ##### 選択しない{-}
@@ -424,7 +454,7 @@ penguins |>
 
 #### 欠損値{.tabset}
 
-##### 選択する{-}
+##### 選択{-}
 
 ```{r}
 # "sexがNAのケースを選択する
@@ -522,7 +552,7 @@ penguins |>
 
 #### 変数を個別に複数指定{.tabset}
 
-##### 選択する{-}
+##### 選択{-}
 
 ```{r}
 # "species"，"island"，"year"を選択する
@@ -540,7 +570,7 @@ penguins |>
 
 #### 変数を連続で複数指定{.tabset}
 
-##### 選択する{-}
+##### 選択{-}
 
 ```{r}
 # "species"から"bill_length_mm"を選択する
@@ -558,7 +588,7 @@ penguins |>
 
 #### 変数をまとめて複数指定{.tabset}
 
-##### 選択する{-}
+##### 選択{-}
 
 ```{r}
 # "species"，"year"をまとめて選択する
@@ -612,7 +642,7 @@ penguins |>
 
 #### 特定の文字で始まる変数を指定{.tabset}
 
-##### 選択する{-}
+##### 選択{-}
 
 ```{r}
 # "bill"で始まる変数を選択する
@@ -642,7 +672,7 @@ penguins |>
 
 #### 特定の文字で終わる変数を指定{.tabset}
 
-##### 選択する{-}
+##### 選択{-}
 
 ```{r}
 # "mm"で終わる変数を選択する
@@ -672,7 +702,7 @@ penguins |>
 
 #### 特定の文字を含む変数を指定{.tabset}
 
-##### 選択する{-}
+##### 選択{-}
 
 ```{r}
 # "length"を含む変数を選択する
@@ -702,7 +732,7 @@ penguins |>
 
 #### 番号のついた変数を指定{.tabset}
 
-##### 選択する{-}
+##### 選択{-}
 
 ```{r}
 # x1～x6の変数を追加したオブジェクトを作成
@@ -1630,6 +1660,105 @@ x |>
   bind_rows(y)
 ```
 
+## 日付
+
+### 日付型を作成する
+
+```{r}
+# "period"の変数を追加したオブジェクトを作成
+df <- 
+  tribble(
+    ~var, ~period,
+    "A", "2020/1/1~2020/1/31", 
+    "B", "2020/1/1~2020/3/31",
+    "C", "2020/4/1~2020/5/31",  
+    "D", "2020/6/1~2020/10/31")
+
+# "period"を"period_from"と"period_to"の2つの日付変数に分割
+# remove = FALSEを入れることで他の変数も保持される
+df <- 
+  df |> 
+  separate(period,
+           into = c("period_from", "period_to"),
+           sep = "~",
+           remove = FALSE)
+
+# "period_from"と"period_to"を日付型に変更
+df <- 
+  df |> 
+  mutate(across(starts_with("period_"),
+                ~lubridate::ymd(.)))
+
+# period_fromが2020/4/1以降に絞る
+df |> 
+  filter(period_from >= "2020/4/1")
+```
+
+## その他
+
+### 重複
+
+#### 重複を見つける
+
+```{r}
+# "fruit"と"color"の変数を追加したオブジェクトを作成
+df <- 
+  tribble(
+    ~fruit,     ~color, 
+    "apple",      "red", 
+    "banana",  "yellow",  
+    "melon",    "green",
+    "apple",    "green",
+    "banana",  "yellow",
+    "apple",    "blue")
+
+df 
+
+# get_dupes()の中に変数を指定しない場合，すべての変数を使って重複を見つける
+# "banana"が2ケース重複している
+# 重複していないケースは返ってこない
+df |> 
+  janitor::get_dupes()
+
+# get_dupes()の中に変数を指定する場合，指定した変数を使って重複を見つける
+# "apple"が3ケース，"banana"が2ケース重複している
+# 重複していないケースは返ってこない
+df |> 
+  janitor::get_dupes(fruit)
+```
+
+#### 重複を削除する
+
+```{r}
+# "fruit"と"color"の変数を追加したオブジェクトを作成
+df <- 
+  tribble(
+    ~fruit,     ~color, 
+    "apple",      "red", 
+    "banana",  "yellow",  
+    "melon",    "green",
+    "apple",    "green",
+    "banana",  "yellow",
+    "apple",    "blue")
+
+df 
+
+# "apple"，"banana"の重複を削除
+df |> 
+  distinct()
+
+# distinct()の中に変数を指定しない場合，すべての変数を使って重複を削除する
+# "banana"の重複が削除
+df |> 
+  distinct()
+
+# distinct()の中に変数を指定する場合，指定した変数を使って重複を削除する
+# "apple"の重複，"banana"の重複が削除
+# .keep_all = TRUEを入れることで他の変数も保持される
+df |> 
+  distinct(fruit, .keep_all = TRUE)
+```
+
 ## 論理ベクトル
 
 ### ひとつの条件（if_else）
@@ -1960,6 +2089,57 @@ str_view_all(sample_quant, "a{2,}")
 ```{r}
 # "a"が2～4個
 str_view_all(sample_quant, "a{2,4}")
+```
+
+
+# データの書き出し
+
+## csvファイルを書き出す場合
+
+### 出力
+
+```{r eval=FALSE}
+# resultフォルダに"penguins.xlsx"を格納
+write_csv(penguins,
+          file = "result/penguins.csv")
+```
+
+### 日付を自動で入れて出力
+
+```{r eval=FALSE}
+# 日付オブジェクトの作成
+# 出力時に日付の8桁が自動で挿入されるようにする
+today <- 
+  lubridate::today() |> 
+  str_replace_all("-", "")
+
+# resultフォルダに"penguins_xxxxxxxx(日付).xlsx"を格納
+write_csv(penguins,
+          file = str_c("result/penguins_", today, ".csv"))
+```
+
+## Excelファイルを書き出す場合
+
+### 出力
+
+```{r eval=FALSE}
+# resultフォルダに"penguins.xlsx"を格納
+writexl::write_xlsx(penguins,
+                    path = "result/penguins.xlsx")
+```
+
+### 日付を自動で入れて出力
+
+```{r eval=FALSE}
+# 日付オブジェクトの作成
+# 出力時に日付の8桁が自動で挿入されるようにする
+today <- 
+  lubridate::today() |> 
+  str_replace_all("-", "")
+
+# resultフォルダに"penguins_xxxxxxxx(日付).xlsx"を格納
+writexl::write_xlsx(penguins,
+                    path = str_c("result/penguins_", today, ".xlsx"))
 ```
 
 
