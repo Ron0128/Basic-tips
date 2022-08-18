@@ -1005,6 +1005,30 @@ penguins |>
   count(sex)
 ```
 
+#### ひとつの変数内で水準名から一部の文字を削除する
+
+```{r}
+# "fruit"と"color"の変数を追加したオブジェクトを作成
+df <- 
+  tribble(
+    　~time,
+    "time1", 
+    "time2",   
+    "time3",  
+    "time4",     
+    "time5"
+    )
+
+df 
+
+# "sex"の"male"を"1"に，"female"を"2"に変更する
+# count()で"sex"を確認
+df |> 
+  mutate(
+    time = str_replace(time, "time", "")) |> 
+  count(time)
+```
+
 #### 他の変数を使って水準名を変更する
 
 ```{r}
@@ -1693,6 +1717,117 @@ df <-
 df |> 
   filter(period_from >= "2020/4/1")
 ```
+
+## 繰り返し処理（map）
+
+* 繰り返し処理
+  + [RStudio Cheatsheets](https://www.rstudio.com/resources/cheatsheets/)のうちApply functions with purrr cheatsheetを参照
+
+### 基礎
+
+#### 1つのリスト
+
+* `map(.x, .f, …)`はリストまたはベクトルの各要素に関数を適用してリストを返す
+
+![Figure29.mapの説明（Apply functions with purrr cheatsheet）](images/purrr_1.PNG)
+
+##### 基本形
+
+```{r}
+# "a"，"b"のベクトルの入った"x"，“c”，"d"のベクトルの入った"y"からなるリストを作成
+l1 <- 
+  list(x = c("a", "b"), 
+       y = c("c", "d"))
+
+l1
+
+# リストの各要素をアルファベット降順に並び替える
+map(l1, sort, decreasing = TRUE)
+```
+
+##### さまざまなタイプ
+
+* 結果の型を指定できる
+
+関数|用途
+----|----|----
+map_dbl(.x, .f, …)|実数型で返す
+map_int(.x, .f, ...)|整数型で返す
+map_chr(.x, .f, …)|文字列型で返す
+map_lgl(.x, .f, …)|論理型で返す
+map_dfc(.x, .f, ...)|列結合で作成されたデータフレームを返す
+map_dfr(.x, .f, ..., .id = NULL)|行結合で作成されたデータフレームを返す
+
+```{r}
+# 1～10のベクトル，11～20のベクトル，21～30のベクトルからなるリストを作成
+x <- 
+  list(1:10, 11:20, 21:30)
+
+x
+
+# 実数型で返す
+map_dbl(x, mean)
+
+# 整数型で返す
+map_int(x, length)
+
+# 文字列型で返す
+map_chr(l1, paste, collapse = "")
+
+# 論理型で返す
+map_lgl(x, is.integer)
+
+# 列結合で作成されたデータフレームを返す
+map_dfc(l1, rep, 3)
+
+# 行結合で作成されたデータフレームを返す
+map_dfr(x, summary)
+```
+
+#### 2つのリスト
+
+* `map2(.x, .y, .f, …)`は2つのリストまたはベクトルの要素のペアに関数を適用してリストを返す
+
+* map2()のように引数が2つある関数では`~ .x .y`を使用する
+
+![Figure30.map2の説明（Apply functions with purrr cheatsheet）](images/purrr_2.PNG)
+
+##### 基本形
+
+```{r}
+# "y"，"z"，"l2"のリストを作成
+y <- list(1, 2, 3); z <- list(4, 5, 6); l2 <- list(x = "a", y = "z")
+
+y
+
+z
+
+l2
+
+# 各リストの各要素に第一引数*第二引数を適用する
+# map2()のように引数が2つある関数では~ .x .y を使用
+map2(x, y, ~ .x * .y)
+```
+
+#### 複数のリスト
+
+* `pmap(.l, .f, …)`はリストまたはベクトルのリストから要素のグループに関数を適用してリストを返す
+
+* pmap()のように引数が複数ある関数では`~ ..1 ..2 ..3`を使用する
+
+![Figure31.pmapの説明（Apply functions with purrr cheatsheet）](images/purrr_3.PNG)
+
+##### 基本形
+
+```{r}
+# リストの各要素に第一引数*(第二引数+第三引数)を適用する
+# pmap()のように引数が複数ある関数では~ ..1 ..2 ..3を使用
+pmap(list(x, y, z), ~ ..1 * (..2 + ..3))
+```
+
+### 応用
+
+#### ★作成中
 
 ## その他
 
