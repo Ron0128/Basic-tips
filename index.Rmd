@@ -1825,9 +1825,77 @@ map2(x, y, ~ .x * .y)
 pmap(list(x, y, z), ~ ..1 * (..2 + ..3))
 ```
 
-### 応用
+### 実践
 
-#### ★作成中
+#### split()と組み合わせる
+
+* `split()`はリストを作ってグループごとに分割する
+
+* `map()`は各リストの要素数が揃っている必要があるため，そうでなければ揃える処理をする
+
+```{r}
+# speciesごとにsexの人数と割合を算出する
+# split()を使ってspeciesごとにリストにする
+# map()を使ってsexにtabylを適用してリストを返す
+# bind_rows()を使ってリストをまとめる
+# as_tibble()を使ってtibble型にする
+penguins |> 
+  split(penguins$species) |> 
+  map(~janitor::tabyl(.x, sex)) |> 
+  bind_rows(.id = "species") |> 
+  as_tibble()
+
+# speciesごとにsexの割合を横もちで算出する
+# split()を使ってspeciesごとにリストにする
+# map()を使ってsexにtabylを適用してリストを返す（引数でNAを除いて計算）
+# map()を使ってfreqのうちsexとpercentにpivot_widerを適用してリストを返す
+# bind_rows()を使ってリストをまとめる
+# as_tibble()を使ってtibble型にする
+penguins |> 
+  split(penguins$species) |> 
+  map(~janitor::tabyl(.x, sex, show_na = FALSE)) |> 
+  map(~pivot_wider(.x, 
+                   id_cols = !n, 
+                   names_from = sex, 
+                   values_from = percent)) |> 
+  bind_rows(.id = "species") |> 
+  as_tibble()
+```
+
+#### nest()と組み合わせる
+
+* `nest()`はデータフレーム内でグループごとに分割する
+
+* `map()`は各リストの要素数が揃っている必要があるため，そうでなければ揃える処理をする
+
+```{r}
+# speciesごとにsexの人数と割合を算出する
+# nest()を使ってspecies以外の各変数をリストにする
+# map()を使ってsexにtabylを適用してリストを返す
+# unnest()を使ってnestを解除する
+# 不要なdataを取り除く
+penguins |> 
+  nest(data = -species) |> 
+  mutate(freq = map(data, ~janitor::tabyl(.x, sex))) |> 
+  unnest(c(freq)) |> 
+  select(-data)
+
+# speciesごとにsexの割合を横もちで算出する
+# nest()を使ってspecies以外の各変数をリストにする
+# map()を使ってsexにtabylを適用してリストを返す（引数でNAを除いて計算）
+# map()を使ってfreqのうちsexとpercentにpivot_widerを適用してリストを返す
+# unnest()を使ってnestを解除する
+# 不要なdataを取り除く
+penguins |> 
+  nest(data = -species) |> 
+  mutate(freq = map(data, ~janitor::tabyl(.x, sex, show_na = FALSE)),
+         freq = map(freq, ~pivot_wider(.x, 
+                                       id_cols = !n, 
+                                       names_from = sex, 
+                                       values_from = percent))) |> 
+  unnest(c(freq)) |> 
+  select(-data)
+```
 
 ## その他
 
