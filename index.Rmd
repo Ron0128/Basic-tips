@@ -1897,6 +1897,146 @@ penguins |>
   select(-data)
 ```
 
+## 関数
+
+* [Programming with dplyr](https://dplyr.tidyverse.org/articles/programming)を参照して作成
+
+* R for Data Science（2e）よりもProgramming with dplyrのほうが例がわかりやすいため
+
+* 関数を作ることのメリット（Wickham & Grolemund, 27.1 Introduction）
+
+1. 関数にはコードを理解しやすくする名前をつけることができる
+2. 変更が生じても1つの場所で更新すればよい
+3. コピー＆ペーストの際に，偶発的なミスを冒す可能性を排除できる
+
+### 基礎
+
+* 関数の引数にデータ変数がある場合, 二重カッコで囲む必要がある（たとえば`filter(df, {{ var }})`）
+
+#### 引数に変数をひとつ追加する
+
+```{r}
+# var変数（ひとつ）の人数, 最小値, 最大値を算出する関数
+var_summary <- function(data, var) {
+    data |> 
+    summarise(n = n(), min = min({{ var }}), max = max({{ var }}))
+}
+
+# var変数にbill_length_mmを指定
+penguins |> 
+  group_by(species) |>  
+  var_summary(bill_length_mm)
+
+
+# group_var変数ごとにbill_length_mmの平均値を算出する関数
+group_mean <- function(data, group_var) {
+  data |> 
+    group_by({{ group_var }}) |> 
+    summarise(mean = mean(bill_length_mm, na.rm = TRUE))
+}
+
+# group_var変数にspeciesを指定
+penguins |> 
+  group_mean(species)
+
+
+# summary_vars変数（複数）の平均値を算出する関数
+vars_mean <- function(data, summary_vars) {
+  data |> 
+    summarise(across({{ summary_vars }}, ~ mean(., na.rm = TRUE)))
+}
+
+# summary_vars変数にbill_length_mm, bill_depth_mmを指定
+penguins |> 
+  group_by(species) |> 
+  vars_mean(c(bill_length_mm, bill_depth_mm))
+```
+
+#### 引数に変数を2つ追加する
+
+```{r}
+# mean_var変数, sd_var変数の平均値, 標準偏差を算出する関数
+m_sd <- function(data, mean_var, sd_var) {
+  data |> 
+    summarise(mean = mean({{ mean_var }}, na.rm = TRUE), sd = sd({{ sd_var }}, na.rm = TRUE))
+}
+
+# mean_var変数にbill_length_mm, sd_var変数にbill_depth_mmを指定
+penguins |> 
+  m_sd(bill_length_mm, bill_length_mm)
+
+
+# group_var変数ごとにsummarise_var変数の平均値を算出する関数
+group_vars_mean <- function(data, group_var, summarise_var) {
+  data |> 
+    group_by(across({{ group_var }})) |> 
+    summarise(across({{ summarise_var }}, ~mean(., na.rm = TRUE), .names = "mean_{.col}"))
+}
+
+# group_var変数にisland, summarise_var変数にbill_length_mm, bill_depth_mmを指定
+penguins |> 
+  group_vars_mean(island, c(bill_length_mm, bill_depth_mm))
+```
+
+### 実践
+
+#### 全体と層別の平均値と人数を出す関数
+
+```{r}
+all_group = function(data, value_vars, group_vars = NULL) {
+  data |> 
+    group_by(across({{group_vars}})) |> 
+    summarise(across({{value_vars}},
+                     list(mean = ~mean(., na.rm = TRUE),
+                          n = ~sum(!is.na(.))))
+                                   )
+}
+
+res <- 
+  quos(NULL, species, island) |> 
+  map(~all_group(penguins, bill_length_mm, !!.x)) |> 
+  bind_rows()
+
+res
+
+res <- 
+  res |> 
+  unite(item, c(species, island), remove = FALSE, na.rm = TRUE) |> 
+  mutate(item = if_else(is.na(species) & is.na(island), "all", item)) |> 
+  select(item, bill_length_mm_mean:bill_length_mm_n)
+
+res
+```
+
+#### グループ別にtabylする関数(作成中)
+
+```{r eval=FALSE, include=FALSE}
+nest_tabyl = function(df, outcome_var, nest_vars = NULL){
+  df |> 
+    nest(data = -c({{nest_vars}})) |> 
+    mutate(freq = map(data, ~janitor::tabyl(.x, {{outcome_var}}))) |> 
+    select(-data) |> 
+    unnest(cols ~ c(freq)) |> 
+    as_tibble()
+}
+
+groups <- 
+  quos(NULL, year, species, island, sex,
+       NULL, year, species, island, sex,
+       NULL, year, species, island, sex,
+       NULL, year, species, island, sex)
+
+outcomes <- 
+  c(rep("bill_length_mm", 5),
+    rep("bill_depth_mm", 5),
+    rep("flipper_length_mm", 5),
+    rep("body_mass_g", 5))
+
+res <- 
+  map2(outcomes, groups, ~nest_tabyl(penguins, !!.x, !!.y)) |> 
+  set_names(outcomes)
+```
+
 ## その他
 
 ### 重複
